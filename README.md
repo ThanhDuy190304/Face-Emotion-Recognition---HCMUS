@@ -6,8 +6,9 @@ Tìm hiểu và thực nghiệm mô hình **ResEmoteNet** trong bài toán nhậ
 ## 📚 Mô tả chi tiết
 Tất cả các thử nghiệm được thực hiện trên tập dữ liệu **RAF-DB**, bao gồm các kịch bản sau:
 
-- Huấn luyện trên dữ liệu gốc (chưa tăng cường)
-- Huấn luyện trên dữ liệu tăng cường bằng kỹ thuật tự triển khai
+- Huấn luyện trên dữ liệu gốc (chưa áp dụng augmentation).
+- Huấn luyện trên dữ liệu đã được tăng cường bằng kỹ thuật augmentation do nhóm tự triển khai.
+- Huấn luyện trên dữ liệu đã được tiền xử lý bằng kỹ thuật pre-processing do nhóm tự triển khai.
 
 ## 🖥️ Môi trường huấn luyện
 Mô hình được huấn luyện trực tiếp trên nền tảng **Kaggle Notebooks**, sử dụng GPU do Kaggle cung cấp.  
@@ -38,7 +39,7 @@ pip install -r requirement.txt
 5. Tải dữ liệu
 - Bước 1: Tải dataset
   - Tải dataset **RAF-DB** từ Kaggle.
-- Bước 2: Tiền xử lý dữ liệu
+
   - Chuẩn hóa cấu trúc dữ liệu theo hướng dẫn của ResEmoteNet:  
     🔗 [data_preprocessing README.md](https://github.com/ArnabKumarRoy02/ResEmoteNet/blob/main/data_preprocessing/README.md)
 
@@ -50,6 +51,8 @@ pip install -r requirement.txt
     - `val_labels.csv`
     - `test_labels.csv`  
     Các file này nên có định dạng 2 cột: `image_name`, `class`.
+
+- Bước 2: Tiền xử lý dữ liệu
 
 - Bước 3: Tăng cường dữ liệu
 
@@ -64,13 +67,15 @@ pip install -r requirement.txt
 
 
 ## 🚀 Sử dụng
-1. Huấn luyện
+1. Huấn luyện mô hình
 ```bash
 python ResEmoteNet_train.py
 ```
-2. Đánh giá
+2. Đánh giá mô hình
+- Tải mô hình đã huấn luyện sẵn từ Google Drive [tại đây](https://drive.google.com/drive/folders/1QHoIC8TJ9ZThx-h6ls60G2wZ_Liu9uuG?usp=drive_link).
 
-Tải các model từ [link Google Drive này](https://drive.google.com/drive/folders/1QHoIC8TJ9ZThx-h6ls60G2wZ_Liu9uuG?usp=drive_link) và đặt vào thư mục `model` trong thư mục gốc dự án.
+- Đặt vào thư mục model trong thư mục gốc dự án.
 
-- Các file python dùng để đánh giá mô hình nằm trong thư mục `eval`.
+- Các script đánh giá mô hình nằm trong thư mục eval.
+
 
