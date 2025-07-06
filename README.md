@@ -69,7 +69,8 @@ pip install -r requirement.txt
 python ResEmoteNet_train.py
 ```
 2. Đánh giá
+
 Tải các model từ [link Google Drive này](https://drive.google.com/drive/folders/1QHoIC8TJ9ZThx-h6ls60G2wZ_Liu9uuG?usp=drive_link) và đặt vào thư mục `model` trong thư mục gốc dự án.
 
-
+- Các file python dùng để đánh giá mô hình nằm trong thư mục `eval`.
 
