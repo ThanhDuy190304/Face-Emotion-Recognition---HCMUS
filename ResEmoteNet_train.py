@@ -4,43 +4,43 @@ import numpy as np
 from tqdm import tqdm
 
 from torch.utils.data import DataLoader
-from torchvision import transforms
 import torch.optim as optim
 import matplotlib.pyplot as plt
+from approach.ResEmoteNet import ResEmoteNet
+from utils.get_dataset import Four4All
+from utils.transforms import get_transform
 
-from approach.baseline import BaselineModel
-from get_dataset import Four4All
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
+else:
+    device = torch.device("cpu")
 
-device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 print(f"Using {device} device")
 
-# Transform the dataset
-transform = transforms.Compose([
-    transforms.Resize((64, 64)),
-    transforms.Grayscale(num_output_channels=3),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
-    )
-])
+trainsform = get_transform()
 
 # Load the dataset
-train_dataset = Four4All(csv_file='data/train_labels.csv',
-                         img_dir='data/train', transform=transform)
+train_dataset = Four4All(csv_file='data/rafdb/train_labels.csv',
+                         img_dir='data/rafdb/train', transform=trainsform)
+print(f"Number of training samples: {len(train_dataset)}")
+print(f"Label counts: {train_dataset.get_label_counts()}")
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 train_image, train_label = next(iter(train_loader))
 
 
-val_dataset = Four4All(csv_file='data/valid_labels.csv', 
-                       img_dir='data/valid/', transform=transform)
+val_dataset = Four4All(csv_file='data/rafdb/val_labels.csv',
+                        img_dir='data/rafdb/val/', transform=trainsform)
+print(f"Number of validation samples: {len(val_dataset)}")
+print(f"Label counts: {val_dataset.get_label_counts()}")
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=True)
 val_image, val_label = next(iter(val_loader))
 
-
-test_dataset = Four4All(csv_file='data/test_labels.csv', 
-                        img_dir='data/test', transform=transform)
+test_dataset = Four4All(csv_file='data/rafdb/test_labels.csv',
+                        img_dir='data/rafdb/test', transform=trainsform)
+print(f"Number of test samples: {len(test_dataset)}")
+print(f"Label counts: {test_dataset.get_label_counts()}")
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 test_image, test_label = next(iter(test_loader))
 
@@ -49,11 +49,8 @@ print(f"Train batch: Image shape {train_image.shape}, Label shape {train_label.s
 print(f"Validation batch: Image shape {val_image.shape}, Label shape {val_label.shape}")
 print(f"Test batch: Image shape {test_image.shape}, Label shape {test_label.shape}")
 
-
 # Load the model
-model = BaselineModel().to(device)
-
-
+model = ResEmoteNet().to(device)
 # Print the number of parameters
 total_params = sum(p.numel() for p in model.parameters())
 print(f'{total_params:,} total parameters.')
@@ -66,6 +63,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9, weight_decay=1
 patience = 15
 best_val_acc = 0
 patience_counter = 0
+epoch_counter = 0
 
 num_epochs = 80
 
@@ -141,6 +139,7 @@ for epoch in range(num_epochs):
     val_accuracies.append(val_acc)
 
     print(f"Epoch {epoch+1}, Train Loss: {train_loss}, Train Accuracy: {train_acc}, Test Loss: {test_loss}, Test Accuracy: {test_acc}, Validation Loss: {val_loss}, Validation Accuracy: {val_acc}")
+    epoch_counter += 1
     
     if val_acc > best_val_acc:
         best_val_acc = val_acc
@@ -155,7 +154,7 @@ for epoch in range(num_epochs):
         break
 
 df = pd.DataFrame({
-    'Epoch': range(1, 80),
+    'Epoch': range(1, epoch_counter+1),
     'Train Loss': train_losses,
     'Test Loss': test_losses,
     'Validation Loss': val_losses,
